@@ -1,0 +1,8 @@
+port: 8083
+nats_url: nats://nats:4222
+db_url: postgres://traffic:traffic@postgres:5432/traffic?sslmode=disable
+
+# Semaphore: max concurrent messages processing
+processor:
+  max_concurrent_messages: 50  # Limit to 50 parallel DB operations
+

@@ -1,0 +1,2 @@
+port: 8082
+nats_url: nats://nats:4222

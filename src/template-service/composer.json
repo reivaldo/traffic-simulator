@@ -1,0 +1,25 @@
+{
+  "name": "traffic-simulator/template-service",
+  "description": "PHP template provider service for traffic-simulator",
+  "type": "project",
+  "require": {
+    "php": "^8.2"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^10.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "TemplateService\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "TemplateService\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit"
+  }
+}
+

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sender
+  namespace: traffic-simulator
+spec:
+  selector:
+    app: sender
+  ports:
+    - protocol: TCP
+      port: 8084
+      targetPort: 8084

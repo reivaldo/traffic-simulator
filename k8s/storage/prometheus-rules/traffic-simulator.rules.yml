@@ -1,0 +1,39 @@
+groups:
+  - name: traffic-simulator-recording
+    interval: 10s
+    rules:
+      - record: traffic_simulator:pipeline_success_rate_1m
+        expr: sum(rate(ingestor_messages_received_total{status="success"}[1m])) + sum(rate(processor_messages_processed_total{status="success"}[1m])) + sum(rate(sender_messages_sent_total{status="success"}[1m]))
+
+      - record: traffic_simulator:pipeline_error_rate_1m
+        expr: sum(rate(ingestor_messages_received_total{status="error"}[1m])) + sum(rate(processor_messages_processed_total{status="error"}[1m])) + sum(rate(sender_messages_sent_total{status="error"}[1m]))
+
+  - name: traffic-simulator-alerts
+    interval: 15s
+    rules:
+      - alert: TrafficSimulatorDown
+        expr: up{job=~"simulator|ingestor|processor|sender|admin-api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service down in traffic-simulator"
+          description: "Service {{ $labels.job }} ({{ $labels.instance }}) has been down for at least 1 minute."
+
+      - alert: TrafficPipelineNoThroughput
+        expr: traffic_simulator:pipeline_success_rate_1m < 1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Pipeline throughput is too low"
+          description: "End-to-end success throughput is below 1 msg/s for at least 2 minutes."
+
+      - alert: TrafficPipelineHighErrorRate
+        expr: traffic_simulator:pipeline_error_rate_1m > 5
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Pipeline error rate is high"
+          description: "End-to-end error rate is above 5 msg/s for at least 1 minute."

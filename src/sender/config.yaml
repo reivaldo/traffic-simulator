@@ -1,0 +1,7 @@
+port: 8084
+nats_url: nats://nats:4222
+
+# Semaphore: max concurrent messages delivery
+sender:
+  max_concurrent_messages: 50  # Limit to 50 parallel message sends
+

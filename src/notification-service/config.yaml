@@ -1,0 +1,8 @@
+port: 8085
+
+nats_url: nats://nats:4222
+
+# Provider URLs (wired to PHP template-service in docker-compose)
+sms_url: http://template-service:8085
+email_url: http://template-service:8085
+whatsapp_url: http://template-service:8085

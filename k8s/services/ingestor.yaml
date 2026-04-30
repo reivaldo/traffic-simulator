@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingestor
+  namespace: traffic-simulator
+spec:
+  selector:
+    app: ingestor
+  ports:
+    - protocol: TCP
+      port: 8082
+      targetPort: 8082

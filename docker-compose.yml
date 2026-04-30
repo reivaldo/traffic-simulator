@@ -1,0 +1,134 @@
+# version: "3.8"
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: traffic
+      POSTGRES_PASSWORD: traffic
+      POSTGRES_DB: traffic
+    ports:
+      - "55432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  nats:
+    image: nats:2.10
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    command: ["-js"]
+  loki:
+    image: grafana/loki:2.9.2
+    ports:
+      - "3100:3100"
+    command: ["-config.file=/etc/loki/local-config.yaml"]
+  prometheus:
+    image: prom/prometheus:v2.51.2
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./k8s/storage/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./k8s/storage/prometheus-rules:/etc/prometheus/rules
+  grafana:
+    image: grafana/grafana:10.4.2
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+      - loki
+    volumes:
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+
+  promtail:
+    image: grafana/promtail:2.9.2
+    ports:
+      - "9080:9080"
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./promtail-config.yaml:/etc/promtail/config.yaml
+    command: -config.file=/etc/promtail/config.yaml
+    depends_on:
+      - loki
+  ingestor:
+    build:
+      context: ./src/ingestor
+    ports:
+      - "8082:8082"
+    volumes:
+      - ./src/ingestor/config.yaml:/app/config.yaml
+    depends_on:
+      - nats
+  processor:
+    build:
+      context: ./src/processor
+    ports:
+      - "8083:8083"
+    volumes:
+      - ./src/processor/config.yaml:/app/config.yaml
+    depends_on:
+      - nats
+      - postgres
+  sender:
+    build:
+      context: ./src/sender
+    ports:
+      - "8084:8084"
+    volumes:
+      - ./src/sender/config.yaml:/app/config.yaml
+    depends_on:
+      - nats
+  notification-service:
+    build:
+      context: ./src/notification-service
+    ports:
+      - "8085:8085"
+    volumes:
+      - ./src/notification-service/config.yaml:/app/config.yaml
+    depends_on:
+      - nats
+      - template-service
+    environment:
+      SMS_URL: "http://template-service:8085"
+      EMAIL_URL: "http://template-service:8085"
+      WHATSAPP_URL: "http://template-service:8085"
+  template-service:
+    build:
+      context: ./src/template-service
+    ports:
+      - "8087:8085"
+  simulator:
+    build:
+      context: ./src/simulator
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./src/simulator/config.yaml:/app/config.yaml
+    depends_on:
+      - nats
+      - postgres
+  admin-api:
+    build:
+      context: ./src/admin-api
+    ports:
+      - "8086:8086"
+    volumes:
+      - ./src/admin-api/config.yaml:/app/config.yaml
+    depends_on:
+      - nats
+      - postgres
+  admin-ui:
+    build:
+      context: ./src/admin-ui
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./src/admin-ui/src:/app/src
+      - ./src/admin-ui/public:/app/public
+    depends_on:
+      - admin-api
+volumes:
+  pgdata:
