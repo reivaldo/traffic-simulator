@@ -196,13 +196,11 @@ PHP service test command:
 cd src/template-service && composer test
 ```
 
-CI pipeline (GitHub Actions):
+CI pipeline (GitHub Actions — **Currently disabled**, for demonstration only):
 
-- Workflow file: `.github/workflows/ci.yml`
-- Triggers: push and pull_request
-- Jobs:
-  - Go tests per module (`ingestor`, `processor`, `sender`, `notification-service`, `simulator`, `admin-api`)
-  - PHP tests for `template-service` using Composer + PHPUnit
+- Workflow file: `.github/workflows/ci.yml` (commented out)
+- To enable: uncomment the workflow file
+- For local testing, use the test commands above per service
 
 ---
 
