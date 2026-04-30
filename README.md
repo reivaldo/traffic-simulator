@@ -22,15 +22,15 @@ simulator → ingestor → [NATS] → processor → [NATS] → sender → [NATS]
 
 ## Implemented Services
 
-| Service                | Responsibility                                                             | Stack                                    |
-| ---------------------- | -------------------------------------------------------------------------- | ---------------------------------------- |
-| `simulator`            | Generates load (80-320 msg/sec) with patterns                              | **Go** + Worker Pool (10 workers)        |
-| `ingestor`             | Receives `MessageIntent` via HTTP, publishes                               | **Go** + DDD (Value Objects)             |
-| `processor`            | Consumes events, persists in DB, publishes                                 | **Go** + Repository Pattern + Idempotent |
-| `sender`               | Consumes `messages.processed`, publishes `messages.sent`                   | **Go** + ports/adapters                  |
-| `admin-api`            | Proxies simulator control + exposes `/metrics`                             | **Go** HTTP                              |
-| `notification-service` | Consumes `messages.sent`, fan-out to SMS/Email/WhatsApp in parallel        | **Go** + Fan-Out Pattern                 |
-| `admin-ui`             | Simple dashboard to control simulation                                     | **React** + MUI                          |
+| Service                | Responsibility                                                                | Stack                                    |
+| ---------------------- | ----------------------------------------------------------------------------- | ---------------------------------------- |
+| `simulator`            | Generates load (80-320 msg/sec) with patterns                                 | **Go** + Worker Pool (10 workers)        |
+| `ingestor`             | Receives `MessageIntent` via HTTP, publishes                                  | **Go** + DDD (Value Objects)             |
+| `processor`            | Consumes events, persists in DB, publishes                                    | **Go** + Repository Pattern + Idempotent |
+| `sender`               | Consumes `messages.processed`, publishes `messages.sent`                      | **Go** + ports/adapters                  |
+| `admin-api`            | Proxies simulator control + exposes `/metrics`                                | **Go** HTTP                              |
+| `notification-service` | Consumes `messages.sent`, fan-out to SMS/Email/WhatsApp in parallel           | **Go** + Fan-Out Pattern                 |
+| `admin-ui`             | Simple dashboard to control simulation                                        | **React** + MUI                          |
 | `template-service`     | Receives provider `/send` calls, validates payload, renders channel templates | **PHP** + Ports/Adapters + Value Object  |
 
 ---
@@ -213,27 +213,27 @@ CI pipeline (GitHub Actions):
 | Document                                                                       | Description                                                                                                         |
 | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
 | **[`patterns-and-technical-learning.md`](patterns-and-technical-learning.md)** | Primary technical walkthrough: DDD, Go patterns, parallelism (worker pool, semaphore, fan-out), and lessons learned |
-| `docs/architecture.md`                                                         | Architecture overview and bounded contexts                                                                          |
-| `docs/message-flow.md`                                                         | End-to-end message flow                                                                                             |
-| `docs/api-reference.md`                                                        | HTTP endpoints and contracts                                                                                        |
+| [`docs/architecture.md`](docs/architecture.md)                                 | Architecture overview and bounded contexts                                                                          |
+| [`docs/message-flow.md`](docs/message-flow.md)                                 | End-to-end message flow                                                                                             |
+| [`docs/api-reference.md`](docs/api-reference.md)                               | HTTP endpoints and contracts                                                                                        |
 
 ### Specific Topics
 
-| Document                    | Topic                                |
-| --------------------------- | ------------------------------------ |
-| `docs/concurrency.md`       | Context, timeouts, graceful shutdown |
-| `docs/observability.md`     | Prometheus, Loki, structured logs    |
-| `docs/simulator.md`         | Load escalation patterns and tuning  |
-| `docs/traffic-dashboard.md` | Grafana dashboards                   |
-| `docs/security.md`          | Validation, limits, rate limiting    |
+| Document                                                 | Topic                                |
+| -------------------------------------------------------- | ------------------------------------ |
+| [`docs/concurrency.md`](docs/concurrency.md)             | Context, timeouts, graceful shutdown |
+| [`docs/observability.md`](docs/observability.md)         | Prometheus, Loki, structured logs    |
+| [`docs/simulator.md`](docs/simulator.md)                 | Load escalation patterns and tuning  |
+| [`docs/traffic-dashboard.md`](docs/traffic-dashboard.md) | Grafana dashboards                   |
+| [`docs/security.md`](docs/security.md)                   | Validation, limits, rate limiting    |
 
 ### Architecture Decision Records
 
-- `docs/adr/ADR-001-technology-choices.md` — Go, NATS, PostgreSQL
-- `docs/adr/ADR-002-event-driven-architecture.md` — Why event-driven?
-- `docs/adr/ADR-003-worker-pools.md` — Controlled parallelism
-- `docs/adr/ADR-005-postgres-schema.md` — Idempotent DB design
-- `docs/adr/ADR-006-observability-loki.md` — Centralized logging
+- [`docs/adr/ADR-001-technology-choices.md`](docs/adr/ADR-001-technology-choices.md) — Go, NATS, PostgreSQL
+- [`docs/adr/ADR-002-event-driven-architecture.md`](docs/adr/ADR-002-event-driven-architecture.md) — Why event-driven?
+- [`docs/adr/ADR-003-worker-pools.md`](docs/adr/ADR-003-worker-pools.md) — Controlled parallelism
+- [`docs/adr/ADR-005-postgres-schema.md`](docs/adr/ADR-005-postgres-schema.md) — Idempotent DB design
+- [`docs/adr/ADR-006-observability-loki.md`](docs/adr/ADR-006-observability-loki.md) — Centralized logging
 
 ---
 
@@ -311,9 +311,11 @@ After studying this project, you will understand:
 
 **Distributed Systems:**
 
-- [Building Microservices (O'Reilly)](https://www.oreilly.com/library/view/building-microservices/9781491950340/)
-- [Event-Driven Architecture (Gwen Shapira)](https://www.oreilly.com/library/view/event-driven-architecture/9781492038061/)
-- [The Art of Scalability (Beasley & Jhala)](https://www.scalability.org/)
+- [Building Microservices (Martin Fowler)](https://martinfowler.com/articles/microservices.html)
+- [Event-Driven Architecture (Confluent)](https://www.confluent.io/learn/event-driven-architecture/)
+- [What do you mean by Event-Driven? (Martin Fowler)](https://martinfowler.com/articles/201701-event-driven.html)
+- [Microservices on AWS](https://aws.amazon.com/microservices/)
+- [Event-Driven Architecture on AWS](https://aws.amazon.com/event-driven-architecture/)
 
 ---
 
